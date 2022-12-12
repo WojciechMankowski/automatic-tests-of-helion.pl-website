@@ -7,6 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+
 class TestWebHelion(TestCase):
 
     def configuration_for_Chrome(self) -> WebDriver:
@@ -14,11 +15,13 @@ class TestWebHelion(TestCase):
         driver.maximize_window()
         driver.implicitly_wait(5)
         return driver
+
     def test_demo_login(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://www.helion.pl")
         title = driver.title
         assert "Księgarnia internetowa informatyczna Helion.pl - wydawnictwo informatyczne, książki, kursy" == title
+
     def test_search(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://www.helion.pl")
@@ -29,6 +32,7 @@ class TestWebHelion(TestCase):
         sleep(6)
         title = driver.title
         assert previous_title == title
+
     def test_search_word(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://www.helion.pl")
@@ -40,6 +44,7 @@ class TestWebHelion(TestCase):
         button = element.find_element(By.CSS_SELECTOR, "p.button").find_element(By.TAG_NAME, "a")
         driver.get(button.get_attribute('href'))
         assert driver.title == '"python" - Wyniki wyszukiwania - Wydawnictwo Helion, księgarnia helion.pl'
+
     def test_select_categpry(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://helion.pl/search?szukaj=python")
@@ -51,6 +56,7 @@ class TestWebHelion(TestCase):
         list_elements = panle_category.find_elements(By.TAG_NAME, "li")
         selected_item = list_elements[0].find_element(By.TAG_NAME, "h4").find_element(By.TAG_NAME, "a")
         assert selected_item.get_attribute('title') == ".NET - Programowanie"
+
     def test_seleced_format(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://helion.pl/search?szukaj=python")
@@ -63,6 +69,7 @@ class TestWebHelion(TestCase):
         const pdf = checkboxLine.querySelector('input')
         pdf.checked = true""")
         assert driver.current_url == 'https://helion.pl/search/?szukaj=python&wsprzed=1&formaty=p&ceny=-'
+
     def test_selecd_langues(self):
         driver = self.configuration_for_Chrome()
         driver.get("https://helion.pl/search?szukaj=python")
@@ -97,25 +104,30 @@ class TestWebHelion(TestCase):
         link = list_li[0].find_element(By.TAG_NAME, "a").get_attribute("href")
         assert link == "https://helion.pl/ksiazki/python-wprowadzenie-wydanie-v-mark-lutz,pyth5v.htm"
 
+
 class HelionAbaoutBook(TestCase):
-    URL= "https://helion.pl/ksiazki/python-wprowadzenie-wydanie-v-mark-lutz,pyth5v.htm#format/d"
+    URL = "https://helion.pl/ksiazki/python-wprowadzenie-wydanie-v-mark-lutz,pyth5v.htm#format/d"
+
     def configuration_for_Chrome(self) -> WebDriver:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         driver.maximize_window()
         driver.implicitly_wait(5)
         return driver
+
     def test_recommendation(self):
         driver = self.configuration_for_Chrome()
         driver.get(self.URL)
         div = driver.find_element(By.CLASS_NAME, "book-description")
         h = div.find_element(By.TAG_NAME, "h3")
         assert h.text == 'Najczęściej kupowane razem'
+
     def test_bestsellers(self):
         driver = self.configuration_for_Chrome()
         driver.get(self.URL)
         div = driver.find_element(By.CLASS_NAME, "book-description")
         h = div.find_element(By.CLASS_NAME, "similar-products-heading")
         assert h.text == 'Wybrane bestsellery'
+
     def test_read_pdf(self):
         driver = self.configuration_for_Chrome()
         driver.get(self.URL)
@@ -129,3 +141,63 @@ class HelionAbaoutBook(TestCase):
         element_a = element_p.find_elements(By.TAG_NAME, 'a')[1]
         link = element_a.get_attribute("href")
         assert link == 'https://helion.pl/pobierz-fragment/pyth5v/pdf'
+
+    def test_autor(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.CLASS_NAME, 'authors-info-book-page ')
+        head = element.find_element(By.TAG_NAME, 'h2')
+        assert head.text == 'O autorze książki'
+
+    def test_section_rites(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.CLASS_NAME, 'votes-header-two')
+        span = driver.find_element(By.CLASS_NAME, 'ocena')
+        assert element.text == 'Oceny i opinie klientów: Python. Wprowadzenie. Wydanie V Mark Lutz (71)'
+        assert span.text == 4.6
+
+    def test_about_book(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.ID, 'section6')
+        head = element.find_element(By.TAG_NAME, 'h3')
+        assert head.text == 'Szczegóły książki'
+
+    def test_contents(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.ID, 'section7')
+        head = element.find_element(By.TAG_NAME, 'h3')
+        assert head.text == 'Spis treści książki'
+
+    def test_choice_format(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.ID, 'box_ebook')
+        element.click()
+        sleep(5)
+        assert element.get_attribute('class') == 'active'
+
+class HelionShopingCart(TestCase):
+    URL = "https://helion.pl/ksiazki/python-wprowadzenie-wydanie-v-mark-lutz,pyth5v.htm#format"
+
+    def configuration_for_Chrome(self) -> WebDriver:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        driver.maximize_window()
+        driver.implicitly_wait(5)
+        driver.get(self.URL)
+        return driver
+
+    def test_add_shoping_cart(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.LINK_TEXT, 'Dodaj do koszyka')
+        element.click()
+        page_title = driver.find_element(By.ID, 'page-title').find_element(By.TAG_NAME, 'h1')
+        assert page_title.text == 'Twój koszyk'
+    def test_check_list_item(self):
+        driver = self.configuration_for_Chrome()
+        element = driver.find_element(By.LINK_TEXT, 'Dodaj do koszyka')
+        element.click()
+        books_name = driver.find_elements(By.CLASS_NAME, 'book-name')
+        for book in books_name:
+            h = book.find_element(By.TAG_NAME, 'a')
+            assert h.text == 'Python. Wprowadzenie. Wydanie V'
+    # def test_add_item_click(self):
+
+
