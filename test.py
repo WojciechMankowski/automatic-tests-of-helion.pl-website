@@ -1,13 +1,16 @@
 from time import sleep
 from unittest import TestCase
+import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
-
+@pytest.hookimpl(tryfirst=True)
+def pytest_html_report_title(report, config):
+    report.title = "Raport z testów stronny helion.pl"
+    config._metadata["foo"] = "bar"
 class TestWebHelion(TestCase):
 
     def configuration_for_Chrome(self) -> WebDriver:
