@@ -7,8 +7,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-[pytest]
-addopts = --html=report.html
+# [pytest]
+# addopts = --html=report.html
 
 class TestWebHelion(TestCase):
 
